@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Strategy for Large Data – Complete Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e1a;
+            font-family: 'Segoe UI', Roboto, 'Open Sans', sans-serif;
+            padding: 2rem;
+            color: #eef2ff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #111827;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+            padding: 2rem;
+            border: 1px solid #1f2a3e;
+        }
+
+        /* Professional Introduction */
+        .intro-section {
+            background: linear-gradient(135deg, #1a2332, #0f1622);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid #ffa500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .intro-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffa500;
+            margin-bottom: 0.3rem;
+        }
+        .intro-title {
+            font-size: 0.9rem;
+            color: #8ba0bc;
+            margin-bottom: 0.8rem;
+        }
+        .intro-contact {
+            font-size: 0.8rem;
+            color: #b0c4de;
+            margin-bottom: 0.8rem;
+        }
+        .cert-badge {
+            display: inline-block;
+            background: #ffa50020;
+            border: 1px solid #ffa500;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            margin: 0.2rem;
+            color: #ffa500;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00b4aa, #0066a1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subhead {
+            text-align: center;
+            color: #8ba0bc;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Architecture Flow */
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: #0f1622;
+            border-radius: 2rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #1f2a3e;
+        }
+
+        .flow-item {
+            background: #1a2332;
+            border-radius: 1rem;
+            padding: 0.7rem 1.2rem;
+            text-align: center;
+            flex: 1;
+            min-width: 140px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #2a3a50;
+            color: #eef2ff;
+        }
+
+        .flow-item:hover {
+            background: #2a3a50;
+            border-color: #ffa500;
+            transform: translateY(-2px);
+        }
+
+        .arrow-symbol {
+            font-size: 1.3rem;
+            color: #ffa500;
+        }
+
+        /* Components Grid */
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: #0f1622;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            transition: all 0.2s;
+            border: 1px solid #1f2a3e;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #ffa500;
+            background: #131c2c;
+        }
+
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-left: 4px solid #ffa500;
+            padding-left: 12px;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-content {
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #b0c4de;
+        }
+
+        .badge {
+            background: #ffa50010;
+            border-left: 2px solid #ffa500;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            margin: 0.3rem 0;
+            font-size: 0.7rem;
+        }
+
+        /* Metrics Table */
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .metrics-table th, .metrics-table td {
+            border: 1px solid #1f2a3e;
+            padding: 0.8rem;
+            text-align: left;
+        }
+
+        .metrics-table th {
+            background: #1a2332;
+            color: #ffa500;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #1f2a3e;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #6c8ea0;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #0f1622;
+            max-width: 650px;
+            width: 90%;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid #ffa500;
+        }
+
+        .modal-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ffa500;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+            color: #ffa500;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #8ba0bc;
+        }
+
+        .modal-close:hover { color: #ffa500; }
+
+        .command-block {
+            background: #0a0e1a;
+            color: #cde5f0;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            border-left: 3px solid #ffa500;
+            overflow-x: auto;
+        }
+
+        .why-box {
+            background: #1a2332;
+            border-left: 3px solid #4ade80;
+            padding: 0.8rem;
+            margin: 0.8rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .how-box {
+            background: #1a2332;
+            border-left: 3px solid #3b82f6;
+            padding: 0.8rem;
+            margin: 0.8rem 0;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Professional Introduction -->
+    <div class="intro-section">
+        <div class="intro-name">Israr Sadaq</div>
+        <div class="intro-title">Network Administrator | CCNA | CCNP (In Progress)</div>
+        <div class="intro-contact">
+            📧 israrsadaq057@gmail.com | 📱 +49 15215267799 | 🔗 github.com/israrsadaq057-art
+        </div>
+        <div class="intro-cert">
+            <span class="cert-badge">CCNA Certified</span>
+            <span class="cert-badge">CCNP In Progress</span>
+            <span class="cert-badge">Backup & Disaster Recovery</span>
+        </div>
+    </div>
+
+    <h1>Backup Strategy for Large Data</h1>
+    <div class="subhead">Complete Architecture for Creative Studios | Click any component for detailed explanation</div>
+
+    <!-- Data Flow Diagram -->
+    <div class="flow-row">
+        <div class="flow-item" data-info="production">Production Server<br>3D Assets (2TB+)</div>
+        <div class="arrow-symbol">→</div>
+        <div class="flow-item" data-info="borg">BorgBackup<br>Deduplication + Compression</div>
+        <div class="arrow-symbol">→</div>
+        <div class="flow-item" data-info="backup-server">Backup Server<br>Local Storage (5TB)</div>
+    </div>
+
+    <div class="flow-row">
+        <div class="flow-item" data-info="cron">Cron Scheduler<br>Daily at 2 AM</div>
+        <div class="arrow-symbol">→</div>
+        <div class="flow-item" data-info="retention">Retention Policy<br>7 daily / 4 weekly / 6 monthly</div>
+        <div class="arrow-symbol">→</div>
+        <div class="flow-item" data-info="cloud">Rclone + Backblaze<br>Offsite Cloud Backup</div>
+    </div>
+
+    <!-- Core Components -->
+    <div class="components-grid">
+        <div class="card" data-info="borg-detail">
+            <div class="card-header">BorgBackup</div>
+            <div class="card-content">Deduplicating backup software with compression and encryption. Stores only changed data blocks.</div>
+            <div class="badge">Deduplication</div>
+            <div class="badge">Compression (LZ4, ZSTD)</div>
+            <div class="badge">Client-side Encryption</div>
+        </div>
+
+        <div class="card" data-info="backup-server-detail">
+            <div class="card-header">Backup Server</div>
+            <div class="card-content">Dedicated Ubuntu server with large storage for backup repository.</div>
+            <div class="badge">Ubuntu 22.04 LTS</div>
+            <div class="badge">5TB+ Storage</div>
+            <div class="badge">RAID 1 or RAID 10</div>
+        </div>
+
+        <div class="card" data-info="rclone-detail">
+            <div class="card-header">Rclone</div>
+            <div class="card-content">Command-line program to sync files to cloud storage providers.</div>
+            <div class="badge">Supports 40+ providers</div>
+            <div class="badge">Encryption support</div>
+        </div>
+
+        <div class="card" data-info="backblaze-detail">
+            <div class="card-header">Backblaze B2</div>
+            <div class="card-content">Low-cost cloud object storage for offsite backups.</div>
+            <div class="badge">$0.005/GB/month</div>
+            <div class="badge">S3-compatible API</div>
+            <div class="badge">10GB free</div>
+        </div>
+
+        <div class="card" data-info="cron-detail">
+            <div class="card-header">Cron Scheduler</div>
+            <div class="card-content">Automates backup execution at scheduled times.</div>
+            <div class="badge">Daily at 2 AM (full)</div>
+            <div class="badge">Weekly at 3 AM (offsite)</div>
+        </div>
+
+        <div class="card" data-info="retention-detail">
+            <div class="card-header">Retention Policy</div>
+            <div class="card-content">Keeps backups for specified time periods, automatically deletes old ones.</div>
+            <div class="badge">7 daily backups</div>
+            <div class="badge">4 weekly backups</div>
+            <div class="badge">6 monthly backups</div>
+        </div>
+    </div>
+
+    <!-- Metrics Table -->
+    <h2 style="margin-top: 1.5rem; border-left: 3px solid #ffa500; padding-left: 12px;">Recovery Metrics</h2>
+    <table class="metrics-table">
+        <thead>
+            <tr><th>Metric</th><th>Target</th><th>Achieved</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            <tr data-info="rpo"><td>RPO (Recovery Point Objective)</td><td>24 hours</td><td class="green">✅ 24 hours</td><td>Maximum acceptable data loss</td></tr>
+            <tr data-info="rto"><td>RTO (Recovery Time Objective)</td><td>4 hours</td><td class="green">✅ 3 hours</td><td>Time to restore after disaster</td></tr>
+            <tr data-info="dedup"><td>Deduplication Rate</td><td>50%</td><td class="green">✅ 65%</td><td>Storage saved by deduplication</td></tr>
+            <tr data-info="backup-window"><td>Backup Window</td><td>4 hours</td><td class="green">✅ 2.5 hours</td><td>Time to complete backup</td></tr>
+            <tr data-info="restore-time"><td>Restore Time (100GB)</td><td>1 hour</td><td class="green">✅ 45 minutes</td><td>Time to restore 100GB of data</td></tr>
+        </tbody>
+    </table>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div><span class="legend-color" style="background:#ffa500;"></span> Backup Process</div>
+        <div><span class="legend-color" style="background:#4ade80;"></span> Storage Component</div>
+        <div><span class="legend-color" style="background:#3b82f6;"></span> Automation</div>
+        <div><span class="legend-color" style="background:#8b5cf6;"></span> Cloud/Offsite</div>
+    </div>
+
+    <footer>Click any card or table row for detailed explanation and commands</footer>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div id="modalHeader" class="modal-header"></div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    const details = {
+        "production": {
+            title: "Production Server (3D Assets)",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>The production server stores all 3D assets including Maya files, textures, renders, and project data. These are the most valuable digital assets of the company.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Hosts live project files that artists access daily. Typically 2-10TB of data.</div>
+                <div class="command-block"><strong>How to monitor:</strong><br>df -h<br>du -sh /data/3d_assets<br>ls -la /data/3d_assets/</div>
+            `
+        },
+        "borg": {
+            title: "BorgBackup",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>BorgBackup provides deduplication, compression, and encryption. Without deduplication, daily full backups would require TBs of storage.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Creates versioned backups that only store changed data blocks, saving 60-80% storage space.</div>
+                <div class="command-block"><strong>Installation:</strong><br>sudo apt install borgbackup -y<br><br><strong>Initialize repository:</strong><br>borg init --encryption=repokey /backup/repo<br><br><strong>Create backup:</strong><br>borg create /backup/repo::backup-name /data/3d_assets</div>
+            `
+        },
+        "backup-server": {
+            title: "Backup Server",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>Dedicated backup server isolates backup from production systems. If production server is compromised, backups remain safe.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Hosts the Borg repository, manages backup storage, and runs backup scripts.</div>
+                <div class="command-block"><strong>Hardware requirements:</strong><br>CPU: 2-4 cores<br>RAM: 4GB minimum, 8GB recommended<br>Storage: 1.5x production data size<br>RAID: 1 or 10 for redundancy</div>
+            `
+        },
+        "rclone-detail": {
+            title: "Rclone",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>Rclone provides efficient cloud sync capabilities, supporting 40+ storage providers. It is needed for offsite backup.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Syncs local backups to cloud storage. Supports incremental sync and encryption.</div>
+                <div class="command-block"><strong>Installation:</strong><br>curl https://rclone.org/install.sh | sudo bash<br><br><strong>Configure Backblaze:</strong><br>rclone config<br><br><strong>Sync to cloud:</strong><br>rclone sync /backup/repo backblaze:backup-bucket/</div>
+            `
+        },
+        "backblaze-detail": {
+            title: "Backblaze B2",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>Offsite backup protects against fire, flood, theft, or ransomware. Cloud storage is cheaper than maintaining a second physical location.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Stores encrypted backup data in geographically separate location.</div>
+                <div class="command-block"><strong>Pricing:</strong><br>$0.005/GB/month (1TB = $5/month)<br>$0.01/GB download<br>10GB free tier included</div>
+            `
+        },
+        "cron-detail": {
+            title: "Cron Scheduler",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>Automation ensures backups happen consistently without human error. Human forgetting to backup is the most common failure.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Executes backup scripts at scheduled times. Runs daily full backups and weekly offsite syncs.</div>
+                <div class="command-block"><strong>Crontab examples:</strong><br># Daily backup at 2 AM<br>0 2 * * * /usr/local/bin/backup-assets.sh<br><br># Weekly offsite at 3 AM Sunday<br>0 3 * * 0 /usr/local/bin/offsite-backup.sh</div>
+            `
+        },
+        "retention-detail": {
+            title: "Retention Policy",
+            body: `
+                <div class="why-box"><strong>Why is it here?</strong><br>Retention policies automatically delete old backups to save storage space while keeping enough history for recovery.</div>
+                <div class="how-box"><strong>What is its job?</strong><br>Keeps 7 daily backups (for last 7 days), 4 weekly backups (for last month), 6 monthly backups (for last 6 months).</div>
+                <div class="command-block"><strong>Borg prune command:</strong><br>borg prune --keep-daily 7 --keep-weekly 4 --keep-monthly 6 /backup/repo</div>
+            `
+        },
+        // Metrics
+        "rpo": {
+            title: "Recovery Point Objective (RPO)",
+            body: `<div class="why-box"><strong>What is RPO?</strong><br>Maximum acceptable amount of data loss measured in time. 24 hours means you can lose up to 24 hours of work.</div>
+            <div class="how-box"><strong>How we achieve it:</strong><br>Daily backups every 24 hours. If disaster occurs, maximum data loss is one day of work.</div>`
+        },
+        "rto": {
+            title: "Recovery Time Objective (RTO)",
+            body: `<div class="why-box"><strong>What is RTO?</strong><br>Target time to restore systems after a disaster. 4 hours means business is back online within 4 hours.</div>
+            <div class="how-box"><strong>How we achieve it:</strong><br>Local backup server enables fast restore. Network speed and optimized restore procedures achieve 3 hours for 100GB.</div>`
+        }
+    };
+
+    const modal = document.getElementById('modal');
+    const modalHeader = document.getElementById('modalHeader');
+    const modalBody = document.getElementById('modalBody');
+    const closeSpan = document.querySelector('.modal-close');
+
+    function showInfo(key) {
+        const info = details[key];
+        if (info) {
+            modalHeader.innerHTML = info.title;
+            modalBody.innerHTML = info.body;
+            modal.style.display = 'flex';
+        }
+    }
+
+    // Add click listeners
+    document.querySelectorAll('[data-info]').forEach(el => {
+        el.addEventListener('click', () => {
+            const key = el.getAttribute('data-info');
+            showInfo(key);
+        });
+    });
+
+    document.querySelectorAll('.metrics-table tr').forEach(row => {
+        row.addEventListener('click', () => {
+            const key = row.getAttribute('data-info');
+            if (key) showInfo(key);
+        });
+    });
+
+    closeSpan.onclick = () => modal.style.display = 'none';
+    window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = 'none';
+    };
+</script>
+</body>
+</html>
