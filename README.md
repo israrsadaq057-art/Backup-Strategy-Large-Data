@@ -18,6 +18,7 @@ This project demonstrates a production-ready backup system suitable for:
 - Game development companies
 - VFX and rendering farms
 - Any creative agency with large file assets
+<img width="1920" height="1020" alt="REULTS" src="https://github.com/user-attachments/assets/4100ce9b-fb5b-4bfd-a7c1-f64f4f016e49" />
 
 ---
 
